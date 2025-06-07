@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>Habit Tracker</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiSGFiaXQgVHJhY2tlciIsInNob3J0X25hbWUiOiJIYWJpdHMiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCM2FXUjBhRDBpTVRJNElpQm9aV2xuYUhROUlqRXlPQ0lnZG1sbGQwSnZlRDBpTUNBd0lERXlPQ0F4TWpnaUlHWnBiR3c5SW01dmJtVWlJSGh0Ykc1elBTSm9kSFJ3T2k4dmQzZDNMbmN6TG05eVp5OHlNREF3TDNOMlp5SStQR055WTJ4bElHTjRQU0kyTkNJZ1kzazlJalkwSWlCeVBTSTJNQ0lnWm1sc2JEMGlJekUyTVRRNFJpSXZQanh3WVhSb0lHUTlJazAwTUM0MUlEWTBRekV4TGpFM0lEWTBMRElnTVRjdU5ERWdNaUF6TW5NeE1TNHhOeUF6TWlBME1DNDFJRE15U0Rnek5TNDFRemt6TkM0NE15QXpNaUE1TkRRZ05EVXVOREVnT1RRMElEWTBXaUlnWm1sc2JEMGlJMFpHUmlJdlBqeHdZWFJvSUdROUlrMDBOQzQxSURVeVF6VXhMakV6SURVeUlEVTJMalVnTkRZdU5qTWdOVFl1TlNBME1GTXdMalVnTXpNdU16Y2dNQzR6TnlBeU5DNDFJRGMzSURJMExqRlROVGN1TmlBeU5DNDVJRFEwSURNNUxqVWdORFFnTkRoV016STJJRGd5TGpWRE5UWXVOVGd6TXlBNE1pNDFJRGd6TGpVZ05USXVOVGsyTnlBNE15NDFJRFEwU0RRMExqVldOVEphSWlCbWFXeHNQU0lqUTBZMk5VUXhJaTgrUEhCaGRHZ2daRDBpVFRZekxqVWdPRGhETmpjdU5Ea3hJRGc0SURNNU5TQTJOQzQzT0RVZ01UWXVOVGd6TXlBM01TNDFRekV4TGprME5UY2dOekl1TmpVZ01DQTNOQzR4TmlBd0lEYzBMamhXTnpZdU1rTXdJRGMzTGpnMklESXhMalUwSURjNExqRWdNalF1TlNBNE5TNDNRelF3TGpJZ09ERXVOeUE1TUM0MUlEazBJRGt3TGpVZ09UUlROakl1TnlBNE55NDVJRFl6TGpVZ09EaGFJaUJtYVd4c1BTSWpRMFkyTlVReElpOCtQQzl6ZG1jKyIsInNpemVzIjoiMTI4eDEyOCIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzFhMWExYSIsInRoZW1lX2NvbG9yIjoiIzFhMWExYSJ9">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        .date-display {
+            color: #888;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .streak-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .streak-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 15px;
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .streak-badge.unlocked {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .streak-badge .icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .streak-badge .label {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .habits-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .habit-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .habit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .habit-card:hover::before {
+            opacity: 1;
+        }
+
+        .habit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .habit-name {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .habit-streak {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #fbbf24;
+        }
+
+        .checkbox-wrapper {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .checkbox-wrapper input {
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            position: absolute;
+            z-index: 2;
+        }
+
+        .checkbox-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            transition: all 0.4s ease;
+        }
+
+        .checkbox-slider::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            left: 3px;
+            bottom: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: all 0.4s ease;
+        }
+
+        .checkbox-wrapper input:checked + .checkbox-slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .checkbox-wrapper input:checked + .checkbox-slider::before {
+            transform: translateX(30px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .add-habit-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 2em;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .add-habit-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #888;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4em;
+            animation: celebrate 1s ease-out;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header>
+            <h1>Habit Tracker</h1>
+            <div class="date-display" id="dateDisplay"></div>
+        </header>
+
+        <div class="streak-badges" id="streakBadges">
+            <div class="streak-badge" data-days="7">
+                <div class="icon">⭐</div>
+                <div class="label">7 Days</div>
+            </div>
+            <div class="streak-badge" data-days="15">
+                <div class="icon">🌟</div>
+                <div class="label">15 Days</div>
+            </div>
+            <div class="streak-badge" data-days="30">
+                <div class="icon">✨</div>
+                <div class="label">30 Days</div>
+            </div>
+            <div class="streak-badge" data-days="60">
+                <div class="icon">💫</div>
+                <div class="label">60 Days</div>
+            </div>
+            <div class="streak-badge" data-days="90">
+                <div class="icon">🌠</div>
+                <div class="label">90 Days</div>
+            </div>
+        </div>
+
+        <div class="habits-container" id="habitsContainer"></div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="todayProgress">0%</div>
+                <div class="stat-label">Today's Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalStreak">0</div>
+                <div class="stat-label">Best Streak</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completedToday">0</div>
+                <div class="stat-label">Completed Today</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="add-habit-btn" id="addHabitBtn">+</button>
+
+    <div class="modal" id="habitModal">
+        <div class="modal-content">
+            <h2>Add New Habit</h2>
+            <form id="habitForm">
+                <div class="form-group">
+                    <label for="habitName">Habit Name</label>
+                    <input type="text" id="habitName" placeholder="e.g., Read 20 pages" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Add Habit</button>
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize app
+        class HabitTracker {
+            constructor() {
+                this.habits = JSON.parse(localStorage.getItem('habits')) || this.getDefaultHabits();
+                this.habitData = JSON.parse(localStorage.getItem('habitData')) || {};
+                this.init();
+            }
+
+            getDefaultHabits() {
+                return [
+                    { id: 1, name: 'No pastries' },
+                    { id: 2, name: 'Walk 30 min' },
+                    { id: 3, name: 'Read 20 pages' },
+                    { id: 4, name: 'Sleep 8h' }
+                ];
+            }
+
+            init() {
+                this.updateDateDisplay();
+                this.renderHabits();
+                this.updateStats();
+                this.updateStreakBadges();
+                this.setupEventListeners();
+                this.checkAndResetDaily();
+            }
+
+            updateDateDisplay() {
+                const date = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                document.getElementById('dateDisplay').textContent = date.toLocaleDateString('en-US', options);
+            }
+
+            getDateKey(date = new Date()) {
+                return date.toISOString().split('T')[0];
+            }
+
+            renderHabits() {
+                const container = document.getElementById('habitsContainer');
+                container.innerHTML = '';
+                
+                this.habits.forEach(habit => {
+                    const habitCard = this.createHabitCard(habit);
+                    container.appendChild(habitCard);
+                });
+            }
+
+            createHabitCard(habit) {
+                const card = document.createElement('div');
+                card.className = 'habit-card';
+                
+                const todayKey = this.getDateKey();
+                const isCompleted = this.habitData[habit.id]?.[todayKey] || false;
+                const streak = this.calculateStreak(habit.id);
+                const weekProgress = this.calculateWeekProgress(habit.id);
+                
+                card.innerHTML = `
+                    <div class="habit-header">
+                        <div class="habit-name">${habit.name}</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="habit-streak">
+                                🔥 ${streak}
+                            </div>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="habit-${habit.id}" ${isCompleted ? 'checked' : ''}>
+                                <div class="checkbox-slider"></div>
+                            </div>
+                            <button class="delete-btn" data-id="${habit.id}">×</button>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${weekProgress}%"></div>
+                    </div>
+                `;
+                
+                const checkbox = card.querySelector(`#habit-${habit.id}`);
+                checkbox.addEventListener('change', () => this.toggleHabit(habit.id, checkbox.checked));
+                
+                const deleteBtn = card.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', () => this.deleteHabit(habit.id));
+                
+                return card;
+            }
+
+            toggleHabit(habitId, isCompleted) {
+                const todayKey = this.getDateKey();
+                
+                if (!this.habitData[habitId]) {
+                    this.habitData[habitId] = {};
+                }
+                
+                this.habitData[habitId][todayKey] = isCompleted;
+                this.saveData();
+                this.updateStats();
+                this.updateStreakBadges();
+                
+                if (isCompleted) {
+                    this.celebrate();
+                }
+                
+                // Update progress bar
+                const card = document.querySelector(`#habit-${habitId}`).closest('.habit-card');
+                const progressFill = card.querySelector('.progress-fill');
+                const weekProgress = this.calculateWeekProgress(habitId);
+                progressFill.style.width = `${weekProgress}%`;
+                
+                // Update streak
+                const streakElement = card.querySelector('.habit-streak');
+                const streak = this.calculateStreak(habitId);
+                streakElement.textContent = `🔥 ${streak}`;
+            }
+
+            calculateStreak(habitId) {
+                let streak = 0;
+                const today = new Date();
+                
+                for (let i = 0; i < 365; i++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dateKey = this.getDateKey(date);
+                    
+                    if (this.habitData[habitId]?.[dateKey]) {
+                        streak++;
+                    } else if (i > 0) {
+                        break;
+                    }
+                }
+                
+                return streak;
+            }
+
+            calculateWeekProgress(habitId) {
+                let completed = 0;
+                const today = new Date();
+                
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dateKey = this.getDateKey(date);
+                    
+                    if (this.habitData[habitId]?.[dateKey]) {
+                        completed++;
+                    }
+                }
+                
+                return (completed / 7) * 100;
+            }
+
+            updateStats() {
+                const todayKey = this.getDateKey();
+                let completedToday = 0;
+                let bestStreak = 0;
+                
+                this.habits.forEach(habit => {
+                    if (this.habitData[habit.id]?.[todayKey]) {
+                        completedToday++;
+                    }
+                    
+                    const streak = this.calculateStreak(habit.id);
+                    if (streak > bestStreak) {
+                        bestStreak = streak;
+                    }
+                });
+                
+                const todayProgress = this.habits.length > 0 ? Math.round((completedToday / this.habits.length) * 100) : 0;
+                
+                document.getElementById('todayProgress').textContent = `${todayProgress}%`;
+                document.getElementById('totalStreak').textContent = bestStreak;
+                document.getElementById('completedToday').textContent = completedToday;
+            }
+
+            updateStreakBadges() {
+                const badges = document.querySelectorAll('.streak-badge');
+                
+                badges.forEach(badge => {
+                    const requiredDays = parseInt(badge.dataset.days);
+                    let hasStreak = false;
+                    
+                    this.habits.forEach(habit => {
+                        const streak = this.calculateStreak(habit.id);
+                        if (streak >= requiredDays) {
+                            hasStreak = true;
+                        }
+                    });
+                    
+                    if (hasStreak) {
+                        badge.classList.add('unlocked');
+                    } else {
+                        badge.classList.remove('unlocked');
+                    }
+                });
+            }
+
+            celebrate() {
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration';
+                celebration.textContent = '🎉';
+                document.body.appendChild(celebration);
+                
+                setTimeout(() => {
+                    celebration.remove();
+                }, 1000);
+            }
+
+            setupEventListeners() {
+                document.getElementById('addHabitBtn').addEventListener('click', () => {
+                    document.getElementById('habitModal').classList.add('active');
+                });
+                
+                document.getElementById('cancelBtn').addEventListener('click', () => {
+                    document.getElementById('habitModal').classList.remove('active');
+                    document.getElementById('habitForm').reset();
+                });
+                
+                document.getElementById('habitForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addHabit();
+                });
+                
+                document.getElementById('habitModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'habitModal') {
+                        document.getElementById('habitModal').classList.remove('active');
+                        document.getElementById('habitForm').reset();
+                    }
+                });
+            }
+
+            addHabit() {
+                const name = document.getElementById('habitName').value.trim();
+                if (!name) return;
+                
+                const newHabit = {
+                    id: Date.now(),
+                    name: name
+                };
+                
+                this.habits.push(newHabit);
+                this.saveData();
+                this.renderHabits();
+                this.updateStats();
+                
+                document.getElementById('habitModal').classList.remove('active');
+                document.getElementById('habitForm').reset();
+            }
+
+            deleteHabit(habitId) {
+                if (confirm('Are you sure you want to delete this habit?')) {
+                    this.habits = this.habits.filter(h => h.id !== habitId);
+                    delete this.habitData[habitId];
+                    this.saveData();
+                    this.renderHabits();
+                    this.updateStats();
+                    this.updateStreakBadges();
+                }
+            }
+
+            checkAndResetDaily() {
+                const lastCheck = localStorage.getItem('lastCheck');
+                const today = this.getDateKey();
+                
+                if (lastCheck !== today) {
+                    localStorage.setItem('lastCheck', today);
+                }
+            }
+
+            saveData() {
+                localStorage.setItem('habits', JSON.stringify(this.habits));
+                localStorage.setItem('habitData', JSON.stringify(this.habitData));
+            }
+        }
+
+        // Initialize the app
+        const app = new HabitTracker();
+
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript,' + encodeURIComponent(`
+                self.addEventListener('install', event => {
+                    self.skipWaiting();
+                });
+                
+                self.addEventListener('activate', event => {
+                    event.waitUntil(clients.claim());
+                });
+                
+                self.addEventListener('fetch', event => {
+                    event.respondWith(fetch(event.request));
+                });
+            `));
+        }
+    </script>
+</body>
+</html>
